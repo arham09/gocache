@@ -37,7 +37,7 @@ func BenchmarkCache_Get(b *testing.B) {
 	evictionPolicies := []EvictionPolicy{FirstInFirstOut, LeastRecentlyUsed}
 	for _, evictionPolicy := range evictionPolicies {
 		cache := NewCache(WithMaxSize(NoMaxSize), WithMaxMemoryUsage(NoMaxMemoryUsage))
-		b.Run(string(evictionPolicy), func(b *testing.B) {
+		b.Run(fmt.Sprintf("Eviction: %d", evictionPolicy), func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
 				cache.Get(strconv.Itoa(n))
 			}
@@ -55,7 +55,7 @@ func BenchmarkCache_Set(b *testing.B) {
 	evictionPolicies := []EvictionPolicy{FirstInFirstOut, LeastRecentlyUsed}
 	for _, evictionPolicy := range evictionPolicies {
 		for name, value := range values {
-			b.Run(fmt.Sprintf("%s %s value", evictionPolicy, name), func(b *testing.B) {
+			b.Run(fmt.Sprintf("%d %s value", evictionPolicy, name), func(b *testing.B) {
 				cache := NewCache(WithMaxSize(NoMaxSize), WithMaxMemoryUsage(NoMaxMemoryUsage), WithEvictionPolicy(evictionPolicy))
 				for n := 0; n < b.N; n++ {
 					cache.Set(strconv.Itoa(n), value)
@@ -153,7 +153,7 @@ func BenchmarkCache_GetSetConcurrentWithFrequentEviction(b *testing.B) {
 	value := strings.Repeat("a", 256)
 	evictionPolicies := []EvictionPolicy{FirstInFirstOut, LeastRecentlyUsed}
 	for _, evictionPolicy := range evictionPolicies {
-		b.Run(string(evictionPolicy), func(b *testing.B) {
+		b.Run(fmt.Sprintf("Eviction: %d", evictionPolicy), func(b *testing.B) {
 			cache := NewCache(WithEvictionPolicy(LeastRecentlyUsed), WithMaxSize(3), WithMaxMemoryUsage(NoMaxMemoryUsage))
 			b.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
@@ -171,7 +171,7 @@ func BenchmarkCache_GetSetConcurrentWithFrequentEviction(b *testing.B) {
 func BenchmarkCache_GetConcurrently(b *testing.B) {
 	value := strings.Repeat("a", 256)
 	for _, evictionPolicy := range []EvictionPolicy{FirstInFirstOut, LeastRecentlyUsed} {
-		b.Run(string(evictionPolicy), func(b *testing.B) {
+		b.Run(fmt.Sprintf("Eviction: %d", evictionPolicy), func(b *testing.B) {
 			cache := NewCache(WithMaxSize(100000))
 			for i := 0; i < 100000; i++ {
 				cache.Set(strconv.Itoa(i), value)
