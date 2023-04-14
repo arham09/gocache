@@ -2,7 +2,6 @@ package gocache
 
 import (
 	"container/list"
-	"log"
 )
 
 type FrequencyItem struct {
@@ -43,10 +42,6 @@ func (c *Cache) incrementEntryFrequency(entry *Entry) {
 
 	entry.frequencyParent = nextFrequency
 	nextFrequency.Value.(*FrequencyItem).Entries[entry] = 1
-
-	for key := range nextFrequency.Value.(*FrequencyItem).Entries {
-		log.Println(key.Key)
-	}
 
 	if currentFrequency != nil {
 		c.removeEntryFromFrequencyList(currentFrequency, entry)
